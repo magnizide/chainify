@@ -1,0 +1,40 @@
+version: '3'
+services:
+  app:
+    depends_on:
+      - mongodb
+    build:
+      context: .
+    container_name: app
+    environment:
+      APP_ENV: "nonprod"
+      APP_PORT: 5000
+      MONGODB_DATABASE: appdb
+      MONGODB_USERNAME: flaskuser
+      MONGODB_PASSWORD: your_mongodb_password
+      MONGODB_HOSTNAME: mongodb
+    ports:
+      - 8080:8080
+    networks:
+      - app_net
+  
+  mongodb:
+    image: mongo:7.0.0-rc5
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongodbuser
+      MONGO_INITDB_ROOT_PASSWORD: 123456
+      MONGO_INITDB_DATABASE: appdb
+      MONDODB_LOG_DIR: /dev/null
+      MONGODB_DATA_DIR: /data/db
+    volumes:
+      - mongodbdata:/data/db
+    networks:
+      - app_net
+  
+networks:
+  app_net:
+
+volumes:
+  mongodbdata:
+    driver: local
