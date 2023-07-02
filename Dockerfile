@@ -4,9 +4,9 @@ LABEL author="Nicolas Vargas ndvargas95@gmail.com"
 
 COPY src /opt/src
 
-RUN pip install -r requirements.txt
+RUN pip install -r /opt/src/requirements.txt
 
 EXPOSE 8080
 
 WORKDIR /opt/src
-ENTRYPOINT [ "flask run" ]
+CMD [ "/usr/local/bin/python3", "app.py" ]

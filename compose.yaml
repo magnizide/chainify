@@ -8,11 +8,13 @@ services:
     container_name: app
     environment:
       APP_ENV: "nonprod"
-      APP_PORT: 5000
+      APP_PORT: 8080
       MONGODB_DATABASE: appdb
-      MONGODB_USERNAME: flaskuser
-      MONGODB_PASSWORD: your_mongodb_password
+      MONGODB_USERNAME: appuser
+      MONGODB_PASSWORD: resuppa
       MONGODB_HOSTNAME: mongodb
+    volumes:
+      - ./src:/opt/src
     ports:
       - 8080:8080
     networks:
@@ -28,13 +30,16 @@ services:
       MONDODB_LOG_DIR: /dev/null
       MONGODB_DATA_DIR: /data/db
     volumes:
-      - mongodbdata:/data/db
+      # - mongodbdata:/data/db
+      - ./db_initializer:/docker-entrypoint-initdb.d
+    ports:
+      - 27017:27017
     networks:
       - app_net
   
 networks:
   app_net:
 
-volumes:
-  mongodbdata:
-    driver: local
+# volumes:
+#   mongodbdata:
+#     driver: local
