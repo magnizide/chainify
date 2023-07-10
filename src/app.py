@@ -9,7 +9,7 @@ from re import match as re_match, split as re_split
 # external imports
 from pymongo import MongoClient
 from pymongo.collection import ReturnDocument
-from bson import json_util, decode as bdecode
+from bson import json_util, ObjectId
 from flask import Flask, jsonify, request, abort
 
 
@@ -27,7 +27,8 @@ db = client.appdb
 
 CHAIN_INTERFACE = {
     'slug': None, # Required: custom identifare made up of name and mongo _id last 4 characters, autocomputed
-    'titulo': None, # Required: Title of the chain. 
+    'titulo': None, # Required: Title of the chain.
+    'autor': {},
     'fecha_inicio': None, # Required: start date of the chain
     'fecha_fin': None, # # Required: end date of the chain
     'aviso': 2, # Optional: numbers of days in which the notification message will be sent
@@ -48,7 +49,8 @@ REQUIRED_VALUES = (
     'titulo',
     'fecha_inicio',
     'fecha_fin',
-    'participantes'
+    'participantes',
+    'autor'
 )
 
 DATE_REGEX = r"^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$"
@@ -101,13 +103,24 @@ def get_cadenas():
     return jsonify(res)
 
 
-@app.route('/cadenas/<slug>', methods=['GET'])
-def get_one_cadena(slug):
-    query = {'slug': slug}
+@app.route('/cadenas/<identifier>', methods=['GET'])
+def get_one_cadena(identifier):
+    query = {'_id': ObjectId(identifier)} if ObjectId.is_valid(identifier) else {'slug': identifier}
     res = db.cadenas.find_one(query)
+    my_print(res)
 
     if res is None:
-        abort(404, ' there is no chain with slug \'{}\''.format(slug)) 
+        abort(404, ' there is no chain with identifier \'{}\''.format(identifier)) 
+
+    return jsonify(json.loads(json_util.dumps(res)))
+
+@app.route('/cadenas/autor/<int:id>', methods=['GET'])
+def get_cadena_by_autor(id):
+    query = {'autor.id': id}
+    res = db.cadenas.find(query)
+
+    if res is None:
+        abort(404, 'Autor id \'{}\' has no chains'.format(id)) 
 
     return jsonify(json.loads(json_util.dumps(res)))
 
