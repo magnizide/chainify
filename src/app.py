@@ -26,7 +26,7 @@ client = MongoClient(app.config['MONGO_URI'])
 db = client.appdb
 
 CHAIN_INTERFACE = {
-    'slug': None, # Required: custom identifare made up of name and mongo _id last 4 characters, autocomputed
+    'slug': None, # Required: custom identifier made up of name and mongo _id last 4 characters. AUTOCOMPUTED
     'titulo': None, # Required: Title of the chain.
     'autor': {},
     'fecha_inicio': None, # Required: start date of the chain
